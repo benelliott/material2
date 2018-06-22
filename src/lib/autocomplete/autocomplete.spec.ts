@@ -1478,6 +1478,41 @@ describe('MatAutocomplete', () => {
           .toEqual(Math.floor(panelBottom), `Expected panel to stay aligned after filtering.`);
     }));
 
+    it('should fall back to above position when requested if options are added while ' +
+        'the panel is open', fakeAsync(() => {
+      let fixture = createComponent(AutocompleteWithOnPushDelay);
+      fixture.detectChanges();
+
+      let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+      let inputReference = fixture.debugElement.query(By.css('.mat-form-field-flex')).nativeElement;
+
+      // Push the element down so it has a little bit of space, but not enough to render.
+      inputReference.style.bottom = '10px';
+      inputReference.style.position = 'fixed';
+
+      dispatchFakeEvent(inputEl, 'focusin');
+      tick(1000);
+
+      fixture.detectChanges();
+      tick();
+
+      Promise.resolve().then(() => {
+        const inputBottom = inputReference.getBoundingClientRect().bottom;
+        const panel = overlayContainerElement.querySelector('.mat-autocomplete-panel')!;
+        const panelTop = panel.getBoundingClientRect().top;
+
+        expect(Math.floor(inputBottom))
+          .toEqual(Math.floor(panelTop),
+            `Expected panel top to be below input before repositioning.`);
+
+        const inputTop = inputReference.getBoundingClientRect().top;
+        const panelBottom = panel.getBoundingClientRect().bottom;
+
+        expect(Math.floor(inputTop))
+          .toEqual(Math.floor(panelBottom),
+            `Expected panel to fall back to above position after repositioning.`);
+      });
+    }));
   });
 
   describe('Option selection', () => {

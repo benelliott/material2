@@ -225,6 +225,16 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
   }
 
   /**
+   * Updates the position of the autocomplete suggestion panel to ensure that its position allows
+   * for all suggestions to be displayed within the viewport.
+   */
+  updatePosition(): void {
+    if (this._overlayAttached) {
+      this._overlayRef!.updatePosition();
+    }
+  }
+
+  /**
    * A stream of actions that should close the autocomplete panel, including
    * when an option is selected, on blur, and when TAB is pressed.
    */
